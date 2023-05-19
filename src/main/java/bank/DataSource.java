@@ -53,10 +53,48 @@ public class DataSource {
     return customer;
   }
 
-  public static void main(String[] args){
-    Customer customer = getCustomer("twest8o@friendfeed.com");
-    System.out.println(customer.getName());
-  } 
+  public static Account geAccount(int accountID){
+    Account account = null;
+
+    String sql = " Select * from Accounts where id = ?";
+
+    try(Connection connection = Connect();
+        PreparedStatement statement = connection.prepareStatement(sql)){
+
+          statement.setInt(1, accountID);
+
+          try(ResultSet resultSet = statement.executeQuery()){
+            account = new Account(
+              resultSet.getInt("id"), 
+              resultSet.getString("type"),
+              resultSet.getDouble("balance") );
+          }
+
+    }
+    catch(SQLException e){
+      e.printStackTrace();
+    }
+
+
+    return account;
+  }
+  public static void updateAccountBalance(int accountId,double balance){
+    String sql = "Update Accounts Set balance = ? where id = ?";
+
+    try(Connection connection = Connect();
+        PreparedStatement statement = connection.prepareStatement(sql)){
+
+          statement.setDouble(1, balance);
+          statement.setInt(2, accountId);
+
+          statement.executeUpdate();
+
+        }
+        catch(SQLException e){
+          e.printStackTrace();
+        }
+  }
+
 
   
 }
